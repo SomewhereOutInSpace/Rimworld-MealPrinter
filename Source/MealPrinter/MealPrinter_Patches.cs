@@ -10,6 +10,7 @@ namespace MealPrinter
 {
     public static class MealPrinter_Patches
     {
+
         [HarmonyPatch(typeof(FoodUtility), nameof(FoodUtility.BestFoodSourceOnMap))]
         public static class Harmony_FoodUtility_BestFoodSourceOnMap
         {
@@ -39,6 +40,54 @@ namespace MealPrinter
                 {
                     Building_MealPrinter printer = (Building_MealPrinter)foodSource;
                     __result = printer.GetMealThing();
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        //the method was private so i just copy pasted that bitch
+        private static bool IsFoodSourceOnMapSociallyProper(Thing t, Pawn getter, Pawn eater, bool allowSociallyImproper)
+        {
+            if (!allowSociallyImproper)
+            {
+                bool animalsCare = !getter.RaceProps.Animal;
+                if (!t.IsSociallyProper(getter) && !t.IsSociallyProper(eater, eater.IsPrisonerOfColony, animalsCare))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        [HarmonyPatch(typeof(FoodUtility), "SpawnedFoodSearchInnerScan", null)]
+        public static class Harmony_FoodUtility_SpawnedFoodSearchInnerScan
+        {
+            static bool Prefix(ref Predicate<Thing> validator)
+            {
+                var malidator = validator;
+                bool salivator(Thing x) => x is Building_MealPrinter rep ? PrintDel(rep) : malidator(x);
+                validator = salivator;
+                return true;
+            }
+
+            private static bool PrintDel(Building_MealPrinter t)
+            {
+                if (
+                    !MealPrinterMod.allowDispenserFull
+                    || !(MealPrinterMod.getter.RaceProps.ToolUser && MealPrinterMod.getter.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
+                    || t.Faction != MealPrinterMod.getter.Faction && t.Faction != MealPrinterMod.getter.HostFaction
+                    || !MealPrinterMod.allowForbidden && t.IsForbidden(MealPrinterMod.getter)
+                    || !t.powerComp.PowerOn
+                    || !t.InteractionCell.Standable(t.Map)
+                    || !IsFoodSourceOnMapSociallyProper(t, MealPrinterMod.getter, MealPrinterMod.eater, MealPrinterMod.allowSociallyImproper)
+                    || MealPrinterMod.getter.IsWildMan()
+                    || !t.CanPawnPrint(MealPrinterMod.eater)
+                    || !t.HasEnoughFeedstockInHoppers()
+                    || !MealPrinterMod.getter.Map.reachability.CanReachNonLocal(MealPrinterMod.getter.Position, new TargetInfo(t.InteractionCell, t.Map),
+                        PathEndMode.OnCell, TraverseParms.For(MealPrinterMod.getter, Danger.Some)))
+                {
                     return false;
                 }
 
@@ -77,17 +126,16 @@ namespace MealPrinter
         {
             static void Postfix(JobDriver_Ingest __instance, ref string __result)
             {
-                //if (__instance.usingNutrientPasteDispenser)
-                //{
-                    if (__instance.job.GetTarget(TargetIndex.A).Thing is Building_MealPrinter)
-                    {
-                        __result = __instance.job.def.reportString.Replace("TargetA", "printed meal");
-                    }
-                    else
-                    {
-                        __result = __instance.job.def.reportString.Replace("TargetA", __instance.job.GetTarget(TargetIndex.A).Thing.Label);
-                    }
-                //}
+
+                if (__instance.job.GetTarget(TargetIndex.A).Thing is Building_MealPrinter)
+                {
+                    __result = __instance.job.def.reportString.Replace("TargetA", "printed meal");
+                }
+                else
+                {
+                    __result = __instance.job.def.reportString.Replace("TargetA", __instance.job.GetTarget(TargetIndex.A).Thing.Label);
+                }
+
             }
         }
 

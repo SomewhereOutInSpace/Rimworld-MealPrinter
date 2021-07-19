@@ -2,4 +2,3 @@ C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\MealPrinter\Assembli
 C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\MealPrinter\Source\MealPrinter\obj\Debug\MealPrinter.csproj.CoreCompileInputs.cache
 C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\MealPrinter\Source\MealPrinter\obj\Debug\MealPrinter.csproj.CopyComplete
 C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\MealPrinter\Source\MealPrinter\obj\Debug\MealPrinter.dll
-C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\MealPrinter\Source\MealPrinter\obj\Debug\MealPrinter.csproj.AssemblyReference.cache

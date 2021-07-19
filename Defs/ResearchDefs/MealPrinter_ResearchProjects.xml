@@ -8,7 +8,7 @@
   <ResearchProjectDef ParentName="MealPrinterResearch">
     <defName>MealPrinter_MealPrinting</defName>
     <label>Meal Printing</label>
-    <description>Build meal printers, spacer-tech buildings that use protein resequencing and primitive molecular printing to synthesize wholesome, filling meals.</description>
+    <description>Build meal printers, spacer-tech devices that use protein resequencing and primitive molecular printing to synthesize wholesome, filling meals.</description>
     <baseCost>5000</baseCost>
 	<techLevel>Spacer</techLevel>
 	<prerequisites>

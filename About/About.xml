@@ -14,5 +14,5 @@
             <downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
         </li>
     </modDependencies>
-  <description>Meal Printer aims to enable simple, balanced automated meal production to Rimworld's mid and late game. This mod adds the titular meal printer, the spacer descendant of the classic nutrient paste dispensers. Printers can produce simple or fine meals (the latter albeit at a hefty nutrient efficiency penalty), and can also be configured for high-efficiency nutrient paste or bulk NutriBar production.</description>
+  <description>Meal Printer aims to bring simple, balanced automated meal production to Rimworld's mid-to-late game.\n\nMeal Printers are the spacer-tech evolution of nutrient paste dispensers, using protein resequencing and primitive molecular printing to convert raw foodstuffs into filling, wholesome meals. They can produce simple meals or fine meals, and can also be configured for high-efficiency nutrient paste or bulk NutriBar production. </description>
 </ModMetaData>

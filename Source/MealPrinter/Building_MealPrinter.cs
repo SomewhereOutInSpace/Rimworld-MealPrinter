@@ -10,7 +10,7 @@ using Verse.Sound;
 namespace MealPrinter {
     public class Building_MealPrinter : RimWorld.Building_NutrientPasteDispenser
     {
-		private ThingDef mealToPrint;
+        private ThingDef mealToPrint;
 
         private CompMealPrinter mealPrinterComp;
 
@@ -41,23 +41,15 @@ namespace MealPrinter {
             return text;
         }
 
-        /*public override Color DrawColor
-        {
-            get
-            {
-                return new Color(33f / 85f, 53f / 85f, 226f / 255f);
-            }
-        }*/
-
         //Gizmos
-        public override IEnumerable<Gizmo> GetGizmos()
-        {            
+        public override IEnumerable<Gizmo> GetGizmos() 
+        {
             foreach (Gizmo gizmo in base.GetGizmos())
             {
                 yield return gizmo;
             }
 
-            if (mealToPrint == null)
+            if (mealToPrint == null) //New printers will have null for mealToPrint so this catches that
             {
                 mealToPrint = ThingDef.Named("MealSimple");
             }
@@ -74,7 +66,7 @@ namespace MealPrinter {
 
             yield return new Command_Action()
             {
-                
+
                 defaultLabel = "PrintSettingButton".Translate(mealToPrint.label),
                 defaultDesc = GetMealDesc(),
                 icon = getMealIcon(),
@@ -160,20 +152,9 @@ namespace MealPrinter {
                 return null;
             }
 
-            float num = def.building.nutritionCostPerDispense - 0.0001f;
-            if (mealToPrint.Equals(ThingDef.Named("MealNutrientPaste")))
-            {
-                num = (float)((def.building.nutritionCostPerDispense * 0.5) - 0.0001f);
-            }
-            else if (mealToPrint.Equals(ThingDef.Named("MealSimple")))
-            {
-                num = 0.5f - 0.0001f;
-            }
-            else if (mealToPrint.Equals(ThingDef.Named("MealFine"))) {
-                num = 0.75f - 0.0001f;
-            }
+            float num = GetNutritionCost();
 
-            List < ThingDef > list = new List<ThingDef>();
+            List<ThingDef> list = new List<ThingDef>();
             do
             {
                 Thing thing = FindFeedInAnyHopper();
@@ -198,6 +179,41 @@ namespace MealPrinter {
             }
 
             return thing2;
+        }
+
+        //Overriden base HasEnoughFeedstock method
+        //This version considers the selected meal type
+        public override bool HasEnoughFeedstockInHoppers()
+        {
+            float num = 0f;
+            for (int i = 0; i < AdjCellsCardinalInBounds.Count; i++)
+            {
+                IntVec3 c = AdjCellsCardinalInBounds[i];
+                Thing thing = null;
+                Thing thing2 = null;
+                List<Thing> thingList = c.GetThingList(base.Map);
+                for (int j = 0; j < thingList.Count; j++)
+                {
+                    Thing thing3 = thingList[j];
+                    if (IsAcceptableFeedstock(thing3.def))
+                    {
+                        thing = thing3;
+                    }
+                    if (thing3.def == ThingDefOf.Hopper)
+                    {
+                        thing2 = thing3;
+                    }
+                }
+                if (thing != null && thing2 != null)
+                {
+                    num += (float)thing.stackCount * thing.GetStatValue(StatDefOf.Nutrition);
+                }
+                if (num >= GetNutritionCost())
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         //Convert a given stack of feedstock into its equivalent in NutriBars
@@ -240,7 +256,7 @@ namespace MealPrinter {
         //Bulk bar printing button method
         private void TryBulkPrintBars() {
             Thing stack = FindHopperWithEnoughFeedForBar();
-            if (stack == null || !CanDispenseNow) { 
+            if (stack == null || !CanDispenseNow) {
                 Messages.Message("CannotBulkPrintBars".Translate(), MessageTypeDefOf.RejectInput, false);
                 return;
             }
@@ -263,7 +279,7 @@ namespace MealPrinter {
             def.building.soundDispense.PlayOneShot(new TargetInfo(base.Position, base.Map, false));
 
             float nutritionCost = x * 0.375f;
-            int feedstockCost = (int)Math.Floor(nutritionCost/feedStock.GetStatValue(StatDefOf.Nutrition));
+            int feedstockCost = (int)Math.Floor(nutritionCost / feedStock.GetStatValue(StatDefOf.Nutrition));
             feedStock.SplitOff(feedstockCost);
 
             Thing t = ThingMaker.MakeThing(MealPrinter_ThingDefOf.MealPrinter_NutriBar, null);
@@ -287,7 +303,7 @@ namespace MealPrinter {
             {
                 return ContentFinder<Texture2D>.Get("UI/Buttons/MealFine", true);
             }
-            else 
+            else
             {
                 return ContentFinder<Texture2D>.Get("UI/Buttons/MealNutrientPaste", true);
             }
@@ -310,24 +326,47 @@ namespace MealPrinter {
         }
 
         //Get print efficiency for inspect pane
-        private int GetEfficiency() {
+        private String GetEfficiency() {
             if (mealToPrint == ThingDef.Named("MealSimple"))
             {
-                return 50;
+                return "SimpleMealEff".Translate();
             }
             else if (mealToPrint == ThingDef.Named("MealFine"))
             {
-                return 25;
+                return "FineMealEff".Translate();
             }
             else
             {
-                return 85;
+                return "PasteMealEff".Translate();
             }
+        }
+
+        //Get nutrition cost for each potential meal type
+        private float GetNutritionCost() {
+            float num = 0.3f;
+            if (mealToPrint.Equals(ThingDef.Named("MealNutrientPaste")))
+            {
+                num = (float)((def.building.nutritionCostPerDispense * 0.5) - 0.0001f);
+            }
+            else if (mealToPrint.Equals(ThingDef.Named("MealSimple")))
+            {
+                num = 0.5f - 0.0001f;
+            }
+            else if (mealToPrint.Equals(ThingDef.Named("MealFine")))
+            {
+                num = 0.75f - 0.0001f;
+            }
+            return num;
         }
 
         //Get the ThingDef of the current meal
         public ThingDef GetMealThing() {
             return mealToPrint;
+        }
+
+        //Check if pawn's food restrictions allow consumption of the set meal
+        public bool CanPawnPrint(Pawn p) {
+            return p.foodRestriction.CurrentFoodRestriction.Allows(mealToPrint);
         }
 
     }
