@@ -16,6 +16,7 @@ namespace MealPrinter {
 
         public static List<ThingDef> validMeals = new List<ThingDef>();
 
+        private const float barNutritionCost = 0.5f;
         static Building_MealPrinter() {
             validMeals.Add(ThingDef.Named("MealSimple"));
         }
@@ -215,12 +216,35 @@ namespace MealPrinter {
             }
             return false;
         }
+        
+        public List<Thing> GetAllHopperedFeedstock() {
+            List<Thing> allStock = new List<Thing>();
+            for (int i = 0; i < AdjCellsCardinalInBounds.Count; i++)
+            {
+                Building edifice = AdjCellsCardinalInBounds[i].GetEdifice(base.Map);
+                if (edifice != null && edifice.def == ThingDefOf.Hopper)
+                {
+                    List<Thing> thingList = edifice.Position.GetThingList(base.Map);
+                    for (int j = 0; j < thingList.Count; j++)
+                    {
+                        Thing thing = thingList[j];
+                        if (IsAcceptableFeedstock(thing.def))
+                        {
+                            allStock.Add(thing);
+                        }
+                    }
+                }
+            }
+            return allStock;
+        }
 
-        //Convert a given stack of feedstock into its equivalent in NutriBars
-        public int FeedstockBarEquivalent(Thing feedStock) {
+        //Convert a given list of feedstock stacks into its equivalent in NutriBars
+        public int FeedstockBarEquivalent(List<Thing> feedStocks) {
             float num = 0f;
-            num += (float)feedStock.stackCount * feedStock.GetStatValue(StatDefOf.Nutrition);
-            return (int)Math.Floor(num / 0.375f);
+            for (int i = 0; i < feedStocks.Count; i++) {
+                num += (float)feedStocks[i].stackCount * feedStocks[i].GetStatValue(StatDefOf.Nutrition);
+            }
+            return (int)Math.Floor(num / barNutritionCost);
         }
 
         //Returns a valid hopper that also has enough feed for at least one NutriBar
@@ -245,7 +269,7 @@ namespace MealPrinter {
                 }
                 if (thing != null && thing2 != null)
                 {
-                    if ((thing.GetStatValue(StatDefOf.Nutrition) * thing.stackCount) >= 0.375f) {
+                    if ((thing.GetStatValue(StatDefOf.Nutrition) * thing.stackCount) >= barNutritionCost) {
                         return thing;
                     }
                 }
@@ -255,36 +279,54 @@ namespace MealPrinter {
 
         //Bulk bar printing button method
         private void TryBulkPrintBars() {
-            Thing stack = FindHopperWithEnoughFeedForBar();
-            if (stack == null || !CanDispenseNow) {
+            List<Thing> feedStock = GetAllHopperedFeedstock();
+
+            if (feedStock == null || FeedstockBarEquivalent(GetAllHopperedFeedstock()) <= 0) {
                 Messages.Message("CannotBulkPrintBars".Translate(), MessageTypeDefOf.RejectInput, false);
                 return;
             }
 
-            float totalAvailableFeedstock = stack.stackCount;
-            int maxPossibleBars = FeedstockBarEquivalent(stack);
+            int maxPossibleBars = FeedstockBarEquivalent(feedStock);
+            int maxAllowedBars = 30;
 
             Func<int, string> textGetter;
-            textGetter = ((int x) => "SetBarBatchSize".Translate(x, maxPossibleBars));
+            textGetter = ((int x) => "SetBarBatchSize".Translate(x, maxAllowedBars));
             Dialog_Slider window = new Dialog_Slider(textGetter, 1, maxPossibleBars, delegate (int x)
             {
-                ConfirmAction(x, stack);
+                ConfirmAction(x, feedStock);
             }, 1);
             Find.WindowStack.Add(window);
         }
 
         //Bulk bar printing GUI
-        public void ConfirmAction(int x, Thing feedStock)
+        public void ConfirmAction(int x, List<Thing> feedStock)
         {
             def.building.soundDispense.PlayOneShot(new TargetInfo(base.Position, base.Map, false));
 
-            float nutritionCost = x * 0.375f;
-            int feedstockCost = (int)Math.Floor(nutritionCost / feedStock.GetStatValue(StatDefOf.Nutrition));
-            feedStock.SplitOff(feedstockCost);
+            float nutritionCost = x * barNutritionCost;
 
-            Thing t = ThingMaker.MakeThing(MealPrinter_ThingDefOf.MealPrinter_NutriBar, null);
-            t.stackCount = x;
-            GenPlace.TryPlaceThing(t, InteractionCell, Map, ThingPlaceMode.Near);
+            float nutritionRemaining = nutritionCost;
+            List<ThingDef> list = new List<ThingDef>();
+            do
+            {
+                Thing feed = FindFeedInAnyHopper();
+                int nutritionToConsume = Mathf.Min(feed.stackCount, Mathf.CeilToInt(barNutritionCost / feed.GetStatValue(StatDefOf.Nutrition)));
+                nutritionRemaining -= (float)nutritionToConsume * feed.GetStatValue(StatDefOf.Nutrition);
+                list.Add(feed.def);
+                feed.SplitOff(nutritionToConsume);
+
+                Thing bars = ThingMaker.MakeThing(MealPrinter_ThingDefOf.MealPrinter_NutriBar);
+                CompIngredients compIngredients = bars.TryGetComp<CompIngredients>();
+                for (int i = 0; i < list.Count; i++)
+                {
+                    compIngredients.RegisterIngredient(list[i]);
+                }
+                GenPlace.TryPlaceThing(bars, InteractionCell, Map, ThingPlaceMode.Near);
+            }
+
+            while (!(nutritionRemaining <= 0f));
+            def.building.soundDispense.PlayOneShot(new TargetInfo(base.Position, base.Map));
+
         }
 
         //Internally define set meal
