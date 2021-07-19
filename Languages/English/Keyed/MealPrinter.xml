@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+	<!--Meal Descriptions-->
+	<SimpleMealDesc>A simple meal, printed from one main ingredient.\n\nEquivalent nutrient efficiency to manual cooking.</SimpleMealDesc>
+	<FineMealDesc>A complex dish, printed from one main ingredient.\n\nPoor nutrient efficiency that's only worsened by a printer's single-ingredient limitation, but very tasty.</FineMealDesc>
+	<PasteMealDesc>A printed mixture of protein, carbohydrates, vitamins, amino acids and minerals.\n\nUtterly disgusting, but nourishing and prints with unparalleled nutrient efficiency.</PasteMealDesc>
+	
+	<!--Button text and descriptions-->
+	<ButtonBulkPrintBars>Bulk print NutriBars</ButtonBulkPrintBars>
+	<ButtonBulkPrintBarsDesc>Bulk print NutriBars, for emergency stockpiling, caravan supplies or other uses.</ButtonBulkPrintBarsDesc>
+	<ButtonBulkPrintBarsDescNoResearch>Bulk print NutriBars for emergency stockpiling, caravan supplies or other uses.\n\nDISABLED: Research Deep Protein Resequencing to unlock.</ButtonBulkPrintBarsDescNoResearch>
+	<ButtonBulkPrintBarsDescNoPower>Bulk print NutriBars, for emergency stockpiling, caravan supplies or other uses.\n\nDISABLED: Printer is unpowered!</ButtonBulkPrintBarsDescNoPower>
+	
+	<PrintSettingButton>Printing {0}s</PrintSettingButton>
+	
+	<!--Inspect Pane Text-->
+	<CurrentPrintSetting>\nCurrently set to print {0}s.</CurrentPrintSetting>
+	<CurrentEfficiency>\nNutrient efficiency per print: {0}%</CurrentEfficiency>
+	
+	<SetBarBatchSize>Make {0} NutriBars (Max possible: {1})</SetBarBatchSize>
+	
+	<CannotBulkPrintBars>Cannot bulk print NutriBars; printer has insufficient feedstock or is unpowered.</CannotBulkPrintBars>
+</LanguageData>
