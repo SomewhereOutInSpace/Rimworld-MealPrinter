@@ -23,6 +23,11 @@
 	<CurrentEfficiency>\nNutrient efficiency per print: {0}%</CurrentEfficiency>
 	
 	<!--Bulk print bars text-->
-	<SetBarBatchSize>Make {0} NutriBars (Max allowed: {1})</SetBarBatchSize>
+	<SetBarBatchSize>Print {0} NutriBars (Max allowed: {1})</SetBarBatchSize>
 	<CannotBulkPrintBars>Cannot bulk print NutriBars; printer has insufficient feedstock.</CannotBulkPrintBars>
+	<BarQuantity>Quantity</BarQuantity>
+	<PrintSettings>Options</PrintSettings>
+	<PrintForbidden>Mark printed bars as forbidden?</PrintForbidden>
+	<PrintRear>Print bars at rear?</PrintRear>
+	<ConfirmPrint>Print</ConfirmPrint>
 </LanguageData>

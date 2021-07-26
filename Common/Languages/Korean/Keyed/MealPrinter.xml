@@ -25,4 +25,9 @@
 	<!--Bulk print bars text-->
 	<SetBarBatchSize>{0}개의 영양 바 생산 (최대: {1})</SetBarBatchSize>
 	<CannotBulkPrintBars>영양 바를 대량 생산할 수 없습니다. 프린터에 재료가 충분하지 않습니다.</CannotBulkPrintBars>
+	<BarQuantity>수량</BarQuantity>
+	<PrintSettings>옵션</PrintSettings>
+	<PrintForbidden>인쇄된 막대를 금지로 표시하시겠습니까?</PrintForbidden>
+	<PrintRear>후면에 인쇄 막대?</PrintRear>
+	<ConfirmPrint>인쇄</ConfirmPrint>
 </LanguageData>

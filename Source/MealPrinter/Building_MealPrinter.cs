@@ -288,18 +288,21 @@ namespace MealPrinter {
 
             int maxPossibleBars = FeedstockBarEquivalent(feedStock);
             int maxAllowedBars = 30;
+            if (maxPossibleBars > maxAllowedBars) {
+                maxPossibleBars = 30;
+            }
 
             Func<int, string> textGetter;
             textGetter = ((int x) => "SetBarBatchSize".Translate(x, maxAllowedBars));
-            Dialog_Slider window = new Dialog_Slider(textGetter, 1, maxPossibleBars, delegate (int x)
+            Dialog_PrintBars window = new Dialog_PrintBars(textGetter, 1, maxPossibleBars, delegate (int x, bool forbidden, bool rear)
             {
-                ConfirmAction(x, feedStock);
+                ConfirmAction(x, feedStock, forbidden, rear);
             }, 1);
             Find.WindowStack.Add(window);
         }
 
         //Bulk bar printing GUI
-        public void ConfirmAction(int x, List<Thing> feedStock)
+        public void ConfirmAction(int x, List<Thing> feedStock, bool forbidden, bool rear)
         {
             def.building.soundDispense.PlayOneShot(new TargetInfo(base.Position, base.Map, false));
 
@@ -321,7 +324,45 @@ namespace MealPrinter {
                 {
                     compIngredients.RegisterIngredient(list[i]);
                 }
-                GenPlace.TryPlaceThing(bars, InteractionCell, Map, ThingPlaceMode.Near);
+                if (rear)
+                {
+                    //0 1 2 3
+                    //facing up right down left
+                    String rot = this.Rotation.ToString();
+                    IntVec3 targetCell = InteractionCell;
+                    if (rot.Equals("0"))
+                    {
+                        targetCell.z -= 6;
+                        GenPlace.TryPlaceThing(bars, targetCell, Map, ThingPlaceMode.Near);
+                    }
+                    else if (rot.Equals("1"))
+                    {
+                        targetCell.x -= 6;
+                        GenPlace.TryPlaceThing(bars, targetCell, Map, ThingPlaceMode.Near);
+                    }
+                    else if (rot.Equals("2"))
+                    {
+                        targetCell.z += 6;
+                        GenPlace.TryPlaceThing(bars, targetCell, Map, ThingPlaceMode.Near);
+                    }
+                    else if (rot.Equals("3"))
+                    {
+                        targetCell.x += 6;
+                        GenPlace.TryPlaceThing(bars, targetCell, Map, ThingPlaceMode.Near);
+                    }
+                    else
+                    {
+                        Log.Error("[MealPrinter] Couldn't get printer rotation, falling back onto Interaction Cell.");
+                        GenPlace.TryPlaceThing(bars, InteractionCell, Map, ThingPlaceMode.Near);
+                    }
+                }
+                else {
+                    GenPlace.TryPlaceThing(bars, InteractionCell, Map, ThingPlaceMode.Near);
+                }
+
+                if (forbidden) {
+                    bars.SetForbidden(true);
+                }
             }
 
             while (!(nutritionRemaining <= 0f));
