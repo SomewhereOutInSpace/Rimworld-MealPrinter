@@ -171,7 +171,7 @@ namespace MealPrinter {
             }
 
             while (!(num <= 0f));
-            def.building.soundDispense.PlayOneShot(new TargetInfo(base.Position, base.Map));
+            playPrintSound();
             Thing thing2 = ThingMaker.MakeThing(mealToPrint);
             CompIngredients compIngredients = thing2.TryGetComp<CompIngredients>();
             for (int i = 0; i < list.Count; i++)
@@ -277,7 +277,7 @@ namespace MealPrinter {
             return null;
         }
 
-        //Bulk bar printing button method
+        //Bulk bar printing gui setup
         private void TryBulkPrintBars() {
             List<Thing> feedStock = GetAllHopperedFeedstock();
 
@@ -301,10 +301,10 @@ namespace MealPrinter {
             Find.WindowStack.Add(window);
         }
 
-        //Bulk bar printing GUI
+        //Bulk bar printing action
         public void ConfirmAction(int x, List<Thing> feedStock, bool forbidden, bool rear)
         {
-            def.building.soundDispense.PlayOneShot(new TargetInfo(base.Position, base.Map, false));
+            playPrintSound();
 
             float nutritionCost = x * barNutritionCost;
 
@@ -324,37 +324,10 @@ namespace MealPrinter {
                 {
                     compIngredients.RegisterIngredient(list[i]);
                 }
+
                 if (rear)
                 {
-                    //0 1 2 3
-                    //facing up right down left
-                    String rot = this.Rotation.ToString();
-                    IntVec3 targetCell = InteractionCell;
-                    if (rot.Equals("0"))
-                    {
-                        targetCell.z -= 6;
-                        GenPlace.TryPlaceThing(bars, targetCell, Map, ThingPlaceMode.Near);
-                    }
-                    else if (rot.Equals("1"))
-                    {
-                        targetCell.x -= 6;
-                        GenPlace.TryPlaceThing(bars, targetCell, Map, ThingPlaceMode.Near);
-                    }
-                    else if (rot.Equals("2"))
-                    {
-                        targetCell.z += 6;
-                        GenPlace.TryPlaceThing(bars, targetCell, Map, ThingPlaceMode.Near);
-                    }
-                    else if (rot.Equals("3"))
-                    {
-                        targetCell.x += 6;
-                        GenPlace.TryPlaceThing(bars, targetCell, Map, ThingPlaceMode.Near);
-                    }
-                    else
-                    {
-                        Log.Error("[MealPrinter] Couldn't get printer rotation, falling back onto Interaction Cell.");
-                        GenPlace.TryPlaceThing(bars, InteractionCell, Map, ThingPlaceMode.Near);
-                    }
+                    GenPlace.TryPlaceThing(bars, GetRearCell(InteractionCell), Map, ThingPlaceMode.Near);
                 }
                 else {
                     GenPlace.TryPlaceThing(bars, InteractionCell, Map, ThingPlaceMode.Near);
@@ -363,11 +336,11 @@ namespace MealPrinter {
                 if (forbidden) {
                     bars.SetForbidden(true);
                 }
+
             }
 
             while (!(nutritionRemaining <= 0f));
-            def.building.soundDispense.PlayOneShot(new TargetInfo(base.Position, base.Map));
-
+            playPrintSound();
         }
 
         //Internally define set meal
@@ -450,6 +423,44 @@ namespace MealPrinter {
         //Check if pawn's food restrictions allow consumption of the set meal
         public bool CanPawnPrint(Pawn p) {
             return p.foodRestriction.CurrentFoodRestriction.Allows(mealToPrint);
+        }
+
+        //Plays print sound according to settings
+        private void playPrintSound() {
+            if (LoadedModManager.GetMod<MealPrinterMod>().GetSettings<MealPrinterSettings>().printSoundEnabled) {
+                def.building.soundDispense.PlayOneShot(new TargetInfo(base.Position, base.Map));
+            }
+        }
+
+        private IntVec3 GetRearCell(IntVec3 cell) {
+            //0 1 2 3
+            //facing up right down left
+            //this has got to be the stupidest fucking possible means of getting this information and i do not care
+
+            String rot = this.Rotation.ToString();
+            if (rot.Equals("0"))
+            {
+                cell.z -= 6;
+            }
+            else if (rot.Equals("1"))
+            {
+                cell.x -= 6;
+            }
+            else if (rot.Equals("2"))
+            {
+                cell.z += 6;
+            }
+            else if (rot.Equals("3"))
+            {
+                cell.x += 6;
+            }
+            else
+            {
+                Log.Error("[MealPrinter] Couldn't get printer rotation, falling back onto Interaction Cell.");
+            }
+
+            return cell;
+
         }
 
     }

@@ -53,6 +53,7 @@ public class Dialog_PrintBars : Window
 	{
 	}
 
+	//Defines the layout of the printing window
 	public override void DoWindowContents(Rect inRect)
 	{
 		Rect rect = new Rect(inRect.x, inRect.y + 30f, inRect.width, 30f);

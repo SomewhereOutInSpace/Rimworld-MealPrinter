@@ -30,4 +30,9 @@
 	<PrintForbidden>Mark printed bars as forbidden?</PrintForbidden>
 	<PrintRear>Print bars at rear?</PrintRear>
 	<ConfirmPrint>Print</ConfirmPrint>
+	
+	<!--Settings-->
+	<MealPrinterModName>Meal Printer</MealPrinterModName>
+	<PrintSFXLabel>Enable print sound effect?</PrintSFXLabel>
+	
 </LanguageData>
