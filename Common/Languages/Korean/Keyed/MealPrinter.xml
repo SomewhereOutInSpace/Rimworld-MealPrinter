@@ -30,4 +30,9 @@
 	<PrintForbidden>인쇄된 막대를 금지로 표시하시겠습니까?</PrintForbidden>
 	<PrintRear>후면에 인쇄 막대?</PrintRear>
 	<ConfirmPrint>인쇄</ConfirmPrint>
+	
+	<!--Settings-->
+	<MealPrinterModName>급식 프린터</MealPrinterModName>
+	<PrintSFXLabel>인쇄 사운드 효과를 사용하시겠습니까?</PrintSFXLabel>
+	
 </LanguageData>
