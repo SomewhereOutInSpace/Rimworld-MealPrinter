@@ -16,7 +16,7 @@ namespace MealPrinter {
 
         public static List<ThingDef> validMeals = new List<ThingDef>();
 
-        private const float barNutritionCost = 0.5f;
+        private const float barNutritionCost = 0.5f; 
         static Building_MealPrinter() {
             validMeals.Add(ThingDef.Named("MealSimple"));
         }

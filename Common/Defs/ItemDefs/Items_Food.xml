@@ -30,7 +30,6 @@
         <daysToRotStart>75</daysToRotStart>
         <rotDestroys>true</rotDestroys>
       </li>
-      <li Class="CompProperties_Ingredients" />
     </comps>
   </ThingDef>
 </Defs>
