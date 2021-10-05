@@ -12,30 +12,26 @@ namespace MealPrinter {
     {
         private ThingDef mealToPrint;
 
-        private CompMealPrinter mealPrinterComp;
-
         public static List<ThingDef> validMeals = new List<ThingDef>();
 
         private const float barNutritionCost = 0.5f; 
-        static Building_MealPrinter() {
+
+        public override void PostMake()
+        {
+            base.PostMake();
             validMeals.Add(ThingDef.Named("MealSimple"));
+            mealToPrint = ThingDef.Named("MealSimple");
         }
 
-        //Set target meal after reload
-        public override void SpawnSetup(Map map, bool respawningAfterLoad)
+        public override void ExposeData()
         {
-            base.SpawnSetup(map, respawningAfterLoad);
-            mealPrinterComp = GetComp<CompMealPrinter>();
-            mealToPrint = ThingDef.Named(mealPrinterComp.GetMealToPrint());
+            base.ExposeData();
+            Scribe_Defs.Look(ref mealToPrint, "mealToPrint");
         }
 
         //Inspect pane string
         public override string GetInspectString()
         {
-            if (mealToPrint == null) {
-                mealToPrint = ThingDef.Named("MealSimple");
-            }
-
             string text = base.GetInspectString();
             text = text + "CurrentPrintSetting".Translate(mealToPrint.label);
             text = text + "CurrentEfficiency".Translate(GetEfficiency());
@@ -48,11 +44,6 @@ namespace MealPrinter {
             foreach (Gizmo gizmo in base.GetGizmos())
             {
                 yield return gizmo;
-            }
-
-            if (mealToPrint == null) //New printers will have null for mealToPrint so this catches that
-            {
-                mealToPrint = ThingDef.Named("MealSimple");
             }
 
             if (MealPrinter_ThingDefOf.MealPrinter_HighRes.IsFinished && !validMeals.Contains(ThingDef.Named("MealFine")))
@@ -247,36 +238,6 @@ namespace MealPrinter {
             return (int)Math.Floor(num / barNutritionCost);
         }
 
-        //Returns a valid hopper that also has enough feed for at least one NutriBar
-        public Thing FindHopperWithEnoughFeedForBar()
-        {
-            for (int i = 0; i < AdjCellsCardinalInBounds.Count; i++)
-            {
-                Thing thing = null;
-                Thing thing2 = null;
-                List<Thing> thingList = AdjCellsCardinalInBounds[i].GetThingList(base.Map);
-                for (int j = 0; j < thingList.Count; j++)
-                {
-                    Thing thing3 = thingList[j];
-                    if (IsAcceptableFeedstock(thing3.def))
-                    {
-                        thing = thing3;
-                    }
-                    if (thing3.def == ThingDefOf.Hopper)
-                    {
-                        thing2 = thing3;
-                    }
-                }
-                if (thing != null && thing2 != null)
-                {
-                    if ((thing.GetStatValue(StatDefOf.Nutrition) * thing.stackCount) >= barNutritionCost) {
-                        return thing;
-                    }
-                }
-            }
-            return null;
-        }
-
         //Bulk bar printing gui setup
         private void TryBulkPrintBars() {
             List<Thing> feedStock = GetAllHopperedFeedstock();
@@ -346,7 +307,6 @@ namespace MealPrinter {
         //Internally define set meal
         private void SetMealToPrint(ThingDef mealDef) {
             mealToPrint = mealDef;
-            mealPrinterComp.SetMealToPrint(mealToPrint.defName);
         }
 
         //Get meal icon for gizmo
@@ -464,7 +424,5 @@ namespace MealPrinter {
         }
 
     }
-
-
 
 }

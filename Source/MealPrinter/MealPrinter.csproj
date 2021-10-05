@@ -55,7 +55,6 @@
     <Compile Include="Building_MealPrinter.cs" />
     <Compile Include="Dialog_PrintBars.cs" />
     <Compile Include="MealPrinterMod.cs" />
-    <Compile Include="CompMealPrinter.cs" />
     <Compile Include="MealPrinter_Patches.cs" />
     <Compile Include="MealPrinter_ThingDefOf.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

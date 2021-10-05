@@ -51,7 +51,6 @@
         <glowRadius>6</glowRadius>
         <glowColor>(80,112,180,0)</glowColor>
       </li>
-	  <li Class="MealPrinter.CompProperties_MealPrinter"/>
     </comps>
     <size>(3,4)</size>
     <costList>
