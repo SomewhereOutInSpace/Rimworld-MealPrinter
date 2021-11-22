@@ -38,14 +38,8 @@ namespace MealPrinter {
             return text;
         }
 
-        //Gizmos
-        public override IEnumerable<Gizmo> GetGizmos() 
+        public override void Tick()
         {
-            foreach (Gizmo gizmo in base.GetGizmos())
-            {
-                yield return gizmo;
-            }
-
             if (MealPrinter_ThingDefOf.MealPrinter_HighRes.IsFinished && !validMeals.Contains(ThingDef.Named("MealFine")))
             {
                 validMeals.Add(ThingDef.Named("MealFine"));
@@ -54,6 +48,16 @@ namespace MealPrinter {
             if (MealPrinter_ThingDefOf.MealPrinter_Recombinators.IsFinished && !validMeals.Contains(ThingDef.Named("MealNutrientPaste")))
             {
                 validMeals.Add(ThingDef.Named("MealNutrientPaste"));
+            }
+            base.Tick();
+        }
+
+        //Gizmos
+        public override IEnumerable<Gizmo> GetGizmos() 
+        {
+            foreach (Gizmo gizmo in base.GetGizmos())
+            {
+                yield return gizmo;
             }
 
             yield return new Command_Action()
@@ -89,41 +93,12 @@ namespace MealPrinter {
 
             if (MealPrinter_ThingDefOf.MealPrinter_DeepResequencing.IsFinished)
             {
-                if (!this.powerComp.PowerOn)
-                {
-                    yield return new Command_Action()
-                    {
-                        defaultLabel = "ButtonBulkPrintBars".Translate(),
-                        defaultDesc = "ButtonBulkPrintBarsDescNoPower".Translate(),
-                        disabled = true,
-                        icon = ContentFinder<Texture2D>.Get("UI/Buttons/NutriBar", true),
-                        order = -100,
-                        action = delegate ()
-                        {
-                            TryBulkPrintBars();
-                        }
-                    };
-                }
-                else {
-                    yield return new Command_Action()
-                    {
-                        defaultLabel = "ButtonBulkPrintBars".Translate(),
-                        defaultDesc = "ButtonBulkPrintBarsDesc".Translate(),
-                        icon = ContentFinder<Texture2D>.Get("UI/Buttons/NutriBar", true),
-                        order = -100,
-                        action = delegate ()
-                        {
-                            TryBulkPrintBars();
-                        }
-                    };
-                }
-            }
-            else {
                 yield return new Command_Action()
                 {
                     defaultLabel = "ButtonBulkPrintBars".Translate(),
-                    defaultDesc = "ButtonBulkPrintBarsDescNoResearch".Translate(),
-                    disabled = true,
+                    defaultDesc = "ButtonBulkPrintBarsDesc".Translate(),
+                    disabled = !this.powerComp.PowerOn,
+                    disabledReason = "ButtonBulkPrintBarsDescNoPower".Translate(),
                     icon = ContentFinder<Texture2D>.Get("UI/Buttons/NutriBar", true),
                     order = -100,
                     action = delegate ()

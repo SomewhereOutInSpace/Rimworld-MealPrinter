@@ -15,7 +15,7 @@
 	<ButtonBulkPrintBars>Bulk print NutriBars</ButtonBulkPrintBars>
 	<ButtonBulkPrintBarsDesc>Bulk print NutriBars, for emergency stockpiling, caravan supplies or other uses.</ButtonBulkPrintBarsDesc>
 	<ButtonBulkPrintBarsDescNoResearch>Bulk print NutriBars for emergency stockpiling, caravan supplies or other uses.\n\nDISABLED: Research Deep Protein Resequencing to unlock.</ButtonBulkPrintBarsDescNoResearch>
-	<ButtonBulkPrintBarsDescNoPower>Bulk print NutriBars, for emergency stockpiling, caravan supplies or other uses.\n\nDISABLED: Printer is unpowered!</ButtonBulkPrintBarsDescNoPower>
+	<ButtonBulkPrintBarsDescNoPower>printer is unpowered.</ButtonBulkPrintBarsDescNoPower>
 	<PrintSettingButton>Printing {0}s</PrintSettingButton>
 	
 	<!--Inspect Pane Text-->
